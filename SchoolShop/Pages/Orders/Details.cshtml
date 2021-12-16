@@ -1,0 +1,87 @@
+﻿@page
+@model SchoolShop.Pages.Orders.DetailsModel
+
+@{
+    ViewData["Title"] = "Detail bestelling";
+    ViewData["Email"] = "";
+    ViewData["Loginstyle"] = "visibility: visible; ";
+    ViewData["Logoutstyle"] = "visibility: hidden; ";
+    ViewData["Configstyle"] = "visibility: hidden; ";
+    string displaydate = Model.Order.DateTimeStamp.ToString("ddd dd/MM/yyyy");
+    decimal lineTotal = 0M;
+    decimal orderTotal = 0M;
+    if (!string.IsNullOrEmpty(Model.Availability.Email))
+    {
+        ViewData["Email"] = Model.Availability.Email;
+        ViewData["BasketCount"] = Model.Availability.BasketCount;
+        ViewData["Loginstyle"] = "visibility: hidden; ";
+        ViewData["Logoutstyle"] = "visibility: visible; ";
+        if (Model.Availability.IsAdmin)
+        {
+            ViewData["Configstyle"] = "visibility: visible; ";
+        }
+    }
+}
+
+
+<h1>Detail bestelling</h1>
+
+<div>
+    <hr />
+    <div class="row h4" style="padding-left:20px;">
+        Bestellingnummer : @Html.DisplayFor(model => model.Order.Id)
+        <br />
+        Klant : @Html.DisplayFor(model => model.Order.User.Name)
+        @Html.DisplayFor(model => model.Order.User.FirstName)
+        <br />
+        Datum bestelling : @displaydate
+    </div>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>
+                    Artikel
+                </th>
+                <th>
+                    Aantal
+                </th>
+                <th>
+                    Stukprijs
+                </th>
+                <th>
+                    Totaal
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model.OrderDetails)
+            {
+                lineTotal = item.SalesPrice * item.Count;
+                <tr>
+                    <td class="col-6">
+                        @Html.DisplayFor(modelItem => item.Article.ArticleName)
+                    </td>
+
+                    <td class="col-2">
+                        @Html.DisplayFor(modelItem => item.Count)
+                    </td>
+                    <td class="col-2">
+                        @Html.DisplayFor(modelItem => item.SalesPrice)
+                    </td>
+                    <td class="col-2">
+                        € @lineTotal.ToString("#,##0.00")
+                    </td>
+                </tr>
+        orderTotal += lineTotal;
+    }
+        </tbody>
+    </table>
+    <div class="row h4" style="padding-left:20px;">
+        Totaal bestelling : € @orderTotal.ToString("#,##0.00")
+        <hr />
+    </div>
+</div>
+<hr />
+<div>
+    <a asp-page="./Index" class="btn btn-primary">Terug naar overzicht</a>
+</div>
